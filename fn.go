@@ -50,15 +50,15 @@ func getFileObj(isErr bool) (f *os.File) {
 	if ok {
 		farr := strings.Split(mfile, "/")
 		farr = farr[:len(farr)-1]
-		logFileName := time.Now().Format("20060102.log")
+		logFileName := time.Now().Format("20060102")
 		if isErr {
 			farr = append(farr, "logs", "error")
 			createPath(strings.Join(farr, "/"))
-			farr = append(farr, logFileName)
+			farr = append(farr, logFileName+".log")
 		} else {
 			farr = append(farr, "logs", "info")
 			createPath(strings.Join(farr, "/"))
-			farr = append(farr, logFileName)
+			farr = append(farr, logFileName+".log")
 		}
 		fullPath := strings.Join(farr, "/")
 		fObj, err := os.OpenFile(fullPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
@@ -97,4 +97,38 @@ func getWhere(skip int) string {
 		return fmt.Sprintf("%v:%v():%v", file, fn, line)
 	}
 	return ""
+}
+
+func getLogMsg(logl LogLevel, format string, args ...interface{}) string {
+	msg := ""
+	if strings.Contains(format, "%") {
+		msg = fmt.Sprintf(format, args...)
+	} else {
+		msg = fmt.Sprintf("%s %v", format, args)
+	}
+	levels := getLevelByIdx(logl)
+	msg = fmt.Sprintf("[%v][%v][%v]  %v", time.Now().Format("20060102 15:04:05"), levels, getWhere(5), msg)
+	return msg
+}
+
+// ------------------------------------------------------is called
+
+func Debug(format string, args ...interface{}) {
+	Log.Debug(format, args...)
+}
+
+func Info(format string, args ...interface{}) {
+	Log.Info(format, args...)
+}
+
+func Warn(format string, args ...interface{}) {
+	Log.Warn(format, args...)
+}
+
+func Error(format string, args ...interface{}) {
+	Log.Error(format, args...)
+}
+
+func Fatal(format string, args ...interface{}) {
+	Log.Fatal(format, args...)
 }

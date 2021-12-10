@@ -80,10 +80,7 @@ func (lx *LogX) wlog(curr_f *os.File, msg string) {
 
 func (lx *LogX) log(logl LogLevel, format string, args ...interface{}) {
 	if logl >= lx.Level {
-		msg := fmt.Sprintf(format, args...)
-		levels := getLevelByIdx(logl)
-		msg = fmt.Sprintf("[%v][%v][%v]  %v", time.Now().Format("20060102 15:04:05"), levels, getWhere(3), msg)
-
+		msg := getLogMsg(logl, format, args...)
 		// 是否需要退出
 		if logl == FATAL {
 			if lx.Level > DEBUG {
@@ -123,12 +120,14 @@ func (lx *LogX) Close() {
 	lx.errFile.Close()
 }
 
-func (lx *LogX) Info(format string, args ...interface{}) {
-	lx.log(INFO, format, args...)
-}
+// ---------------------------------------------------------------log fn
 
 func (lx *LogX) Debug(format string, args ...interface{}) {
 	lx.log(DEBUG, format, args...)
+}
+
+func (lx *LogX) Info(format string, args ...interface{}) {
+	lx.log(INFO, format, args...)
 }
 
 func (lx *LogX) Warn(format string, args ...interface{}) {
