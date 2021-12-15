@@ -90,21 +90,30 @@ func reOpenFile(f *os.File, name string) (fo *os.File) {
 func getWhere(skip int) string {
 	pc, file, line, ok := runtime.Caller(skip)
 	if ok {
-		fary := strings.Split(file, "/")
-		file = fary[len(fary)-1]
+		// fary := strings.Split(file, "/")
+		// file = fary[len(fary)-1]
 		fn := runtime.FuncForPC(pc).Name()
-		// fn = strings.Split(fn, ".")[1]
-		return fmt.Sprintf("%v:%v():%v", file, fn, line)
+		fn = strings.Split(fn, ".")[1]
+		return fmt.Sprintf("%v:%v():line(%v)", file, fn, line)
 	}
 	return ""
 }
 
-func getLogMsg(logl LogLevel, format string, args ...interface{}) string {
+func getLogMsg(logl LogLevel, args ...interface{}) string {
 	msg := ""
-	if strings.Contains(format, "%") {
-		msg = fmt.Sprintf(format, args...)
+	if len(args) < 1 {
+		return msg
+	}
+	format, ok := args[0].(string)
+	if ok {
+		args = args[1:]
+		if strings.Contains(format, "%") {
+			msg = fmt.Sprintf(format, args...)
+		} else {
+			msg = fmt.Sprintf("%#v", args)
+		}
 	} else {
-		msg = fmt.Sprintf("%s %v", format, args)
+		msg = fmt.Sprintf("%#v", args)
 	}
 	levels := getLevelByIdx(logl)
 	msg = fmt.Sprintf("[%v][%v][%v]  %v", time.Now().Format("20060102 15:04:05"), levels, getWhere(5), msg)
@@ -113,22 +122,27 @@ func getLogMsg(logl LogLevel, format string, args ...interface{}) string {
 
 // ------------------------------------------------------is called
 
-func Debug(format string, args ...interface{}) {
-	Log.Debug(format, args...)
+func Debug(args ...interface{}) string {
+	return Log.Debug(args...)
 }
 
-func Info(format string, args ...interface{}) {
-	Log.Info(format, args...)
+func Info(args ...interface{}) string {
+	return Log.Info(args...)
 }
 
-func Warn(format string, args ...interface{}) {
-	Log.Warn(format, args...)
+func Warn(args ...interface{}) string {
+	return Log.Warn(args...)
 }
 
-func Error(format string, args ...interface{}) {
-	Log.Error(format, args...)
+func Error(args ...interface{}) string {
+	return Log.Error(args...)
 }
 
-func Fatal(format string, args ...interface{}) {
-	Log.Fatal(format, args...)
+func Fatal(args ...interface{}) string {
+	return Log.Fatal(args...)
+}
+
+func Fn(args ...interface{}) {
+	msg := Info(args...)
+	fmt.Println("msg = ", msg)
 }

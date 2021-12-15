@@ -78,9 +78,9 @@ func (lx *LogX) wlog(curr_f *os.File, msg string) {
 	fmt.Fprintln(curr_f, msg)
 }
 
-func (lx *LogX) log(logl LogLevel, format string, args ...interface{}) {
+func (lx *LogX) log(logl LogLevel, args ...interface{}) string {
 	if logl >= lx.Level {
-		msg := getLogMsg(logl, format, args...)
+		msg := getLogMsg(logl, args...)
 		// 是否需要退出
 		if logl == FATAL {
 			if lx.Level > DEBUG {
@@ -103,7 +103,9 @@ func (lx *LogX) log(logl LogLevel, format string, args ...interface{}) {
 		} else {
 			fmt.Println(msg)
 		}
+		return msg
 	}
+	return fmt.Sprintf("%#v", args)
 }
 
 func (lx *LogX) pushLog(ch chan *LogMsg, logMsg *LogMsg) {
@@ -122,22 +124,22 @@ func (lx *LogX) Close() {
 
 // ---------------------------------------------------------------log fn
 
-func (lx *LogX) Debug(format string, args ...interface{}) {
-	lx.log(DEBUG, format, args...)
+func (lx *LogX) Debug(args ...interface{}) string {
+	return lx.log(DEBUG, args...)
 }
 
-func (lx *LogX) Info(format string, args ...interface{}) {
-	lx.log(INFO, format, args...)
+func (lx *LogX) Info(args ...interface{}) string {
+	return lx.log(INFO, args...)
 }
 
-func (lx *LogX) Warn(format string, args ...interface{}) {
-	lx.log(WARN, format, args...)
+func (lx *LogX) Warn(args ...interface{}) string {
+	return lx.log(WARN, args...)
 }
 
-func (lx *LogX) Error(format string, args ...interface{}) {
-	lx.log(ERROR, format, args...)
+func (lx *LogX) Error(args ...interface{}) string {
+	return lx.log(ERROR, args...)
 }
 
-func (lx *LogX) Fatal(format string, args ...interface{}) {
-	lx.log(FATAL, format, args...)
+func (lx *LogX) Fatal(args ...interface{}) string {
+	return lx.log(FATAL, args...)
 }
