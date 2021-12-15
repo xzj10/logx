@@ -106,14 +106,14 @@ func getLogMsg(logl LogLevel, args ...interface{}) string {
 	}
 	format, ok := args[0].(string)
 	if ok {
-		args = args[1:]
 		if strings.Contains(format, "%") {
+			args = args[1:]
 			msg = fmt.Sprintf(format, args...)
 		} else {
-			msg = fmt.Sprintf("%#v", args)
+			msg = fmt.Sprintf("%v", args)
 		}
 	} else {
-		msg = fmt.Sprintf("%#v", args)
+		msg = fmt.Sprintf("%v", args)
 	}
 	levels := getLevelByIdx(logl)
 	msg = fmt.Sprintf("[%v][%v][%v]  %v", time.Now().Format("20060102 15:04:05"), levels, getWhere(5), msg)
