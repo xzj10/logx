@@ -93,7 +93,12 @@ func getWhere(skip int) string {
 		// fary := strings.Split(file, "/")
 		// file = fary[len(fary)-1]
 		fn := runtime.FuncForPC(pc).Name()
-		fn = strings.Split(fn, ".")[1]
+		arr := strings.Split(fn, ".")
+		if strings.Contains(fn, "(") {
+			fn = fmt.Sprintf("%v.%v", arr[1], arr[2])
+		} else {
+			fn = arr[1]
+		}
 		return fmt.Sprintf("%v:%v():line(%v)", file, fn, line)
 	}
 	return ""
